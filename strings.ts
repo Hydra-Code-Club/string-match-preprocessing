@@ -32,8 +32,8 @@ For each position, what are the values that could be there?
 
 function getSetForPos(left: string, right: string, i: number): Array<string>
 {
-    // Whenhere's an odd number of characters in the words;
-    //    account for the middle letter, which can only have 2 values.
+    // When there's an odd number of characters in the words;
+    // account for the middle letter, which can only have 2 values.
     if (left.length - i - 1 == i) {
         return [
             left.charAt(i),
@@ -59,15 +59,12 @@ function pickLetter(current: string, set: Array<string>): string
             counts[letter]++;
         }
     }
-    if (counts[current] % 2 == 0) {
-        return current;
-    }
-    for (var currentLetter in counts) {
-        if (counts[currentLetter] % 2 == 1) {
-            return currentLetter;
+    for (var testedLetter in counts) {
+        if (counts[testedLetter] % 2 == 1 && current !== testedLetter) {
+            return testedLetter;
         }
     }
-    return '?';
+    return current;
 }
 
 function countSteps(left: string, right: string): number
@@ -75,13 +72,16 @@ function countSteps(left: string, right: string): number
     var preProcessingSteps: number = 0;
     for (var i: number = 0; i < left.length; i++) {
         var set: Array<string> = getSetForPos(left, right, i);
+        //console.log("\tposition = " + i + ", letter = " + left.charAt(i));
+        //console.log("\tset = ", set);
         var newLetter: string = pickLetter(left.charAt(i), set);
+        //console.log("\tpicked letter: " + newLetter);
         if (newLetter !== left.charAt(i)) {
             preProcessingSteps++;
-            left = left.substring(0, i - 1) + newLetter + left.substring(i);
+            left = left.substring(0, i) + newLetter + left.substring(i + 1);
         }
     }
-    console.log("Transformed left = " + left);
+    console.log("\tTransformed left = " + left);
     return preProcessingSteps;
 }
 
@@ -91,7 +91,10 @@ var tests: Array<Array<string>> = [
     ['aaab', 'baaa', 'No preprocessing'],
     ['abcd', 'efgh', 'Nightmare scenario (all pre-processing)'],
     ['abcd', 'badc', 'Same letters, but preprocessing required due to order'],
+    ['aaaa', 'aaab', 'Replace one'],
     ['abcde', 'fghij', 'Odd number of letters'],
+    ['a', 'b', 'Must replace one letter'],
+    ['abacaba', 'bacabaa', 'Expecting 4']
 ];
 
 for (var i: number = 0; i < tests.length; i++) {
