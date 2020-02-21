@@ -30,7 +30,7 @@ For each position, what are the values that could be there?
 
  */
 
-function getSetForPos(left, right, i)
+function getSetForPos(left: string, right: string, i: number): Array<string>
 {
     // Whenhere's an odd number of characters in the words;
     //    account for the middle letter, which can only have 2 values.
@@ -48,11 +48,11 @@ function getSetForPos(left, right, i)
     ];
 }
 
-function pickLetter(current, set)
+function pickLetter(current: string, set: Array<string>): string
 {
-    var counts = [];
-    for (var i = 0; i < set.length; i++) {
-        var letter = set[i];
+    var counts: {[key: string]: number} = {};
+    for (var i: number = 0; i < set.length; i++) {
+        var letter: string = set[i];
         if (typeof counts[letter] === 'undefined') {
             counts[letter] = 1;
         } else {
@@ -62,20 +62,20 @@ function pickLetter(current, set)
     if (counts[current] % 2 == 0) {
         return current;
     }
-    for (var letter in counts) {
-        if (counts[letter] % 2 == 1) {
-            return letter;
+    for (var currentLetter in counts) {
+        if (counts[currentLetter] % 2 == 1) {
+            return currentLetter;
         }
     }
     return '?';
 }
 
-function countSteps(left, right)
+function countSteps(left: string, right: string): number
 {
-    preProcessingSteps = 0;
-    for (int i = 0; i < left.length; i++) {
-        set = getSetForPos(left, right, i);
-        newLetter = pickLetter(left.charAt(i), set);
+    var preProcessingSteps: number = 0;
+    for (var i: number = 0; i < left.length; i++) {
+        var set: Array<string> = getSetForPos(left, right, i);
+        var newLetter: string = pickLetter(left.charAt(i), set);
         if (newLetter !== left.charAt(i)) {
             preProcessingSteps++;
             left = left.substring(0, i - 1) + newLetter + left.substring(i);
@@ -83,4 +83,18 @@ function countSteps(left, right)
     }
     console.log("Transformed left = " + left);
     return preProcessingSteps;
+}
+
+var tests: Array<Array<string>> = [
+    ['aaaa', 'aaaa', 'No preprocessing'],
+    ['aaaa', 'bbbb', 'No preprocessing'],
+    ['aaab', 'baaa', 'No preprocessing'],
+    ['abcd', 'efgh', 'Nightmare scenario (all pre-processing)'],
+    ['abcd', 'badc', 'Same letters, but preprocessing required due to order'],
+    ['abcde', 'fghij', 'Odd number of letters'],
+];
+
+for (var i: number = 0; i < tests.length; i++) {
+    console.log(tests[i][2] + ": left = " + tests[i][0] + ", right = " + tests[i][1]);
+    console.log("preprocessing steps = " + countSteps(tests[i][0], tests[i][1]));
 }
